@@ -7,6 +7,7 @@ import Login from "../pages/Auth/Login/Login";
 import Register from "../pages/Auth/Register/Register";
 import PrivetRoute from "./PrivetRoute";
 import Rider from "../pages/Rider/Rider";
+import SendParcel from "../pages/sendParcel/sendParcel";
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +30,15 @@ export const router = createBrowserRouter([
             <Rider></Rider>
           </PrivetRoute>
         ),
+      },
+      {
+        path: "sendParcel",
+        element: (
+          <PrivetRoute>
+            <SendParcel />
+          </PrivetRoute>
+        ),
+        loader: () => fetch("/serviceCenters.json").then((res) => res.json()),
       },
     ],
   },
