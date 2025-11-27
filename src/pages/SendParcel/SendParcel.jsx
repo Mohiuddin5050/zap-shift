@@ -2,14 +2,20 @@ import React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useLoaderData } from "react-router";
 import Swal from "sweetalert2";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import useAuth from "../../hooks/useAuth";
 
 const SendParcel = () => {
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    // formState: { errors },
   } = useForm();
+  const { user } = useAuth();
+
+  const axiosSecure = useAxiosSecure();
+
   const serviceCenters = useLoaderData();
   const regionsDuplicate = serviceCenters.map((c) => c.region);
   const regions = [...new Set(regionsDuplicate)];
@@ -55,8 +61,9 @@ const SendParcel = () => {
       confirmButtonText: "Yes, take it!",
     }).then((result) => {
       if (result.isConfirmed) {
-
-        
+        axiosSecure.post("/parcels", data).then((res) => {
+          console.log("after saving", res.data);
+        });
         // Swal.fire({
         //   title: "Deleted!",
         //   text: "Your file has been deleted.",
@@ -129,6 +136,7 @@ const SendParcel = () => {
               <input
                 type="text"
                 {...register("senderName")}
+                defaultValue={user?.displayName}
                 className="input w-full"
                 placeholder="Sender Name"
               />
@@ -142,13 +150,14 @@ const SendParcel = () => {
                 placeholder="Sender Address"
               />
 
-              {/* Sender Phone No */}
-              <label className="label mt-4">Sender Phone No</label>
+              {/* Sender Email */}
+              <label className="label mt-4">Sender Email</label>
               <input
-                type="number"
-                {...register("senderPhone")}
+                type="email"
+                {...register("senderEmail")}
+                defaultValue={user?.email}
                 className="input w-full"
-                placeholder="Sender Phone No"
+                placeholder="Sender Email"
               />
 
               {/* Sender Regions */}
@@ -209,13 +218,13 @@ const SendParcel = () => {
                 placeholder="Receiver Address"
               />
 
-              {/* Receiver Phone No */}
-              <label className="label mt-4">Receiver Phone No</label>
+              {/* Receiver Email */}
+              <label className="label mt-4">Receiver Email</label>
               <input
-                type="number"
-                {...register("receiverPhone")}
+                type="email"
+                {...register("receiverEmail")}
                 className="input w-full"
-                placeholder="Receiver Phone No"
+                placeholder="Receiver Email"
               />
 
               {/* Receiver Regions */}
