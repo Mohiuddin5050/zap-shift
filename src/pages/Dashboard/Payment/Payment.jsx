@@ -5,7 +5,6 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const Payment = () => {
   const { parcelId } = useParams();
-  console.log(parcelId);
   const axiosSecure = useAxiosSecure();
   const { isLoading, data: parcel } = useQuery({
     queryKey: ["parcels", parcelId],
@@ -14,8 +13,19 @@ const Payment = () => {
       return res.data;
     },
   });
-    console.log(parcel);
 
+  const handlePayment = async () => {
+    const paymentInfo = {
+      cost: parcel.cost,
+      parcelId: parcel._id,
+      parcelName: parcel.parcelName,
+      senderEmail: parcel.senderEmail,
+    };
+
+    const res = await axiosSecure.post("/create-checkout-session", paymentInfo);
+    console.log(res.data);
+    window.location.href = res.data.url;
+  };
 
   if (isLoading) {
     return <span className="loading loading-infinity loading-xl"></span>;
@@ -23,8 +33,12 @@ const Payment = () => {
 
   return (
     <div>
-      <h2>Please Pay for: {parcel.parcelName}</h2>
-      <button className="btn btn-primary text-black">Pay</button>
+      <h2>
+        Please Pay ${parcel.cost} for: {parcel.parcelName}
+      </h2>
+      <button onClick={handlePayment} className="btn btn-primary text-black">
+        Pay
+      </button>
     </div>
   );
 };
